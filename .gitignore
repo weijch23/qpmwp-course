@@ -1,7 +1,7 @@
 __pycache__/
 *.pickle
 *.json
-data/*
+# data/*
 
 # C extensions
 *.so
