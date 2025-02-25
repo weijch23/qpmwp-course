@@ -291,6 +291,7 @@ np.log((1 + X @ weights_minv).cumprod()).plot(label='Minimum-Variance Portfolio'
 
 # --------------------------------------------------------------------------
 # Solve for the minimum tracking error portfolio, setup as a Least Squares problem
+# (Lecture 3)
 # --------------------------------------------------------------------------
 
 # See: https://qpsolvers.github.io/qpsolvers/least-squares.html

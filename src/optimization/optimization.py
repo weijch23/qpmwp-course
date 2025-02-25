@@ -51,7 +51,7 @@ class Objective():
     A class to handle the objective function of an optimization problem.
 
     Parameters:
-    kwargs: Keyword arguments to initialize the dictionary.
+    kwargs: Keyword arguments to initialize the coefficients dictionary. E.g. P, q, constant.
     '''
 
     def __init__(self, **kwargs):
@@ -84,7 +84,6 @@ class OptimizationParameter(dict):
     def __init__(self, **kwargs):
         super().__init__(
             solver_name = 'cvxopt',
-            verbose = True,
         )
         self.update(kwargs)
 
@@ -101,13 +100,13 @@ class Optimization(ABC):
     '''
 
     def __init__(self,
-                 params: OptimizationParameter = OptimizationParameter(),
+                 params: Optional[OptimizationParameter] = None,
                  constraints: Constraints = Constraints(),
                  **kwargs):
-        self.params = params
+        self.params = OptimizationParameter() if params is None else params
         self.params.update(**kwargs)
         self.constraints = constraints
-        self.objective: Objective = Objective(),
+        self.objective: Objective = Objective()
         self.results = {}
 
     @abstractmethod
@@ -119,7 +118,7 @@ class Optimization(ABC):
     @abstractmethod
     def solve(self) -> None:
 
-        # TODO: 
+        # TODO:
         # Check consistency of constraints
         # self.check_constraints()
 
@@ -173,7 +172,7 @@ class Optimization(ABC):
             ub=ub,
             solver_settings=self.params)
 
-        # TODO: 
+        # TODO:
         # [ ] Add turnover penalty in the objective
         # [ ] Add turnover constraint
         # [ ] Add leverage constraint
@@ -224,16 +223,18 @@ class LeastSquares(Optimization):
 class MeanVariance(Optimization):
 
     def __init__(self,
-                 covariance: Covariance = Covariance(),
-                 expected_return: ExpectedReturn = ExpectedReturn(),
+                 constraints: Constraints,
+                 covariance: Optional[Covariance] = None,
+                 expected_return: Optional[ExpectedReturn] = None,
                  risk_aversion: float = 1,
                  **kwargs):
         super().__init__(
+            constraints=constraints,
             risk_aversion=risk_aversion,
             **kwargs
         )
-        self.covariance = covariance
-        self.expected_return = expected_return
+        self.covariance = Covariance() if covariance is None else covariance
+        self.expected_return = ExpectedReturn() if expected_return is None else expected_return
 
     def set_objective(self, optimization_data: OptimizationData) -> None:
         X = optimization_data['return_series']
